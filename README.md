@@ -1,4 +1,4 @@
-# RAGNAR Ω OMNI v33.0
+# RAGNAR Ω OMNI v33.1
 
 **Asymmetric · zero-trust · game-theoretic legal-defense engine.**
 
@@ -123,6 +123,19 @@ curl -s localhost:8000/health
 
 `POST /decide`, `POST /ingest`, `GET /plan/{id}` — see `src/ragnar/api.py`.
 Set `RAGNAR_API_KEY` to require `X-API-Key` on every route (fail-closed).
+
+### Showcase demo (public, self-contained)
+
+The deployment serves a one-page showcase at `/` — no frameworks, no external
+assets, zero build step (`public/index.html`, CDN-served): what the engine
+does, how it works, its hard limits, and a **live demo** running the real
+pipeline through two throttled public endpoints:
+
+- `POST /demo/decide` — the full pipeline, no key, 30 runs/hour/client, input-capped
+- `POST /demo/ingest` — the tripwire monitor with its negation guards
+
+No secret ever reaches the client (SPOF_ANALYSIS.md §V/V8); demo runs are
+stateless and nothing is stored.
 
 ### Docker / compose
 

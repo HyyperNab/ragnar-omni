@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## 33.1.0 (2026-09-26) — Showcase: public one-page demo
+
+The deployment became the demo: a self-contained showcase page plus two
+throttled public endpoints running the real engine.
+
+### Added
+- `public/index.html` — one-page showcase (zero external assets, zero build):
+  intro, four-step pipeline, live `POST /demo/decide` runner with SPOF/victory/
+  document rendering, tripwire playground, doctrine, and the honest limits
+  section (L1–L6). Served by the Vercel CDN; the FastAPI `/` route is the
+  local-dev/wheel fallback.
+- `/demo/decide` and `/demo/ingest` — public showcase surface: same engine,
+  no key, per-client sliding-window throttle (30/hour), hard input caps
+  (field lengths, claim ≤ 1,000,000, correspondence ≤ 12 × 1,500 chars).
+- Demo contracts in the test suite: throttle, caps, negation guard, no-key
+  access, no plan storage for demo runs.
+
+### Changed
+- Version 33.0.0 → 33.1.0 (API, pyproject, health).
+- SPOF_ANALYSIS.md §V extended: V7–V9 (public demo surface, client-secret
+  leak class, frontend SPOF class — all FILTERED).
+
 ## 33.0.0 (2026-09-26) — Ω OMNI: the self-consistent engine
 
 Master synthesis of the v32.0 → v32.3 arc, rebuilt as a production package.

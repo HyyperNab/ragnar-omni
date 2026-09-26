@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAGNAR Ω OMNI — asymmetric legal-defense engine</title>
+<meta name="description" content="An asymmetric, zero-trust, game-theoretic legal-defense engine. Run the live demo: encode a threat, watch the SPOF engine fire, read the drafted defense.">
+<style>
+:root{
+  --bg:#0a0c10; --panel:#11141b; --panel2:#161a24; --line:#242a3a; --line2:#2e3548;
+  --text:#e8e6df; --muted:#8b92a2; --faint:#5c6272;
+  --gold:#d9a441; --gold-dim:#a67c2f; --gold-soft:rgba(217,164,65,.12);
+  --red:#e5484d; --orange:#e08a3c; --blue:#5b8dd6; --green:#4fae6d; --gray:#6b7280;
+  --serif:Georgia,'Times New Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;background:
+  radial-gradient(900px 420px at 50% -140px,rgba(217,164,65,.07),transparent 70%);
+  pointer-events:none;z-index:0}
+main,header,footer{position:relative;z-index:1}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
+h2{font-size:30px;margin-bottom:10px}
+h3{font-size:17px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.lede{color:var(--muted);font-size:17px;max-width:760px}
+section{padding:88px 0;border-top:1px solid var(--line)}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,12,16,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:60px}
+.brand{font-family:var(--serif);font-size:17px;letter-spacing:.02em;white-space:nowrap}
+.brand .omega{color:var(--gold)}
+.pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gray)}
+.pill.live .dot{background:var(--green);box-shadow:0 0 8px rgba(79,174,109,.8)}
+.topbar nav{margin-left:auto;display:flex;gap:22px;font-size:14px}
+.topbar nav a{color:var(--muted)}
+.topbar nav a:hover{color:var(--text);text-decoration:none}
+@media(max-width:760px){.topbar nav{display:none}}
+
+.hero{padding:104px 0 96px;border-top:none}
+.hero h1{font-size:clamp(40px,6.5vw,64px);line-height:1.06}
+.hero h1 .omega{color:var(--gold)}
+.hero .sub{margin:22px 0 8px;font-size:19px;color:var(--text)}
+.hero .desc{margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+.chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:6px 13px}
+.chip b{color:var(--gold);font-weight:600}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-size:15px;padding:12px 22px;border-radius:8px;border:1px solid var(--gold-dim);color:var(--gold);cursor:pointer;background:transparent;font-family:var(--sans)}
+.btn:hover{background:var(--gold-soft);text-decoration:none}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:#141007;font-weight:600}
+.btn.primary:hover{background:#e3b455}
+.btn:disabled{opacity:.45;cursor:wait}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:38px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:38px}
+@media(max-width:940px){.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.grid4,.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px}
+.card .num{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.18em}
+.card h3{margin:9px 0 8px}
+.card p{color:var(--muted);font-size:14px}
+.card .law{font-family:var(--mono);font-size:12px;color:var(--gold);margin-top:10px;display:block}
+
+.demo-grid{display:grid;grid-template-columns:400px 1fr;gap:22px;margin-top:38px;align-items:start}
+@media(max-width:940px){.demo-grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px}
+.panel-title{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.02em}
+.field input[type=text],.field input[type=number],.field input[type=date],.field select,.field textarea{
+  width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:7px;color:var(--text);
+  font-size:14px;padding:9px 11px;font-family:var(--sans)}
+.field textarea{font-family:var(--mono);font-size:12.5px;resize:vertical;min-height:96px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold-dim)}
+.field input[type=date]{color-scheme:dark}
+.checks{display:flex;flex-wrap:wrap;gap:16px;margin:4px 0 15px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.check input{accent-color:var(--gold);width:15px;height:15px}
+.hint{font-size:12px;color:var(--faint);margin-top:12px}
+.hint a{color:var(--muted)}
+
+.status-line{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:14px;border:1px dashed var(--line2);border-radius:8px;margin-top:18px}
+.status-line.err{color:var(--red);border-color:rgba(229,72,77,.4)}
+.status-line .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line2);border-top-color:var(--gold);border-radius:50%;animation:rot 0.8s linear infinite;vertical-align:-2px;margin-right:8px}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+.result-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:6px}
+.result-head .mname{font-family:var(--serif);font-size:26px}
+.badge{font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:4px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);text-transform:uppercase}
+.badge.doctrine{color:var(--gold);border-color:var(--gold-dim)}
+.badge.tstate{color:var(--blue);border-color:rgba(91,141,214,.5)}
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+@media(max-width:620px){.gauges{grid-template-columns:1fr 1fr}}
+.gauge{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.gauge .v{font-family:var(--mono);font-size:19px;color:var(--gold)}
+.gauge .k{font-size:11px;color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+
+.subhead{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:26px 0 12px}
+.spof-row{display:grid;grid-template-columns:40px 1fr 90px 60px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.spof-row:last-child{border-bottom:none}
+.spof-id{font-family:var(--mono);font-size:12px;color:var(--faint)}
+.spof-code{font-size:13.5px;font-weight:600}
+.spof-desc{grid-column:2/5;font-size:12.5px;color:var(--muted);margin-top:-6px;padding-bottom:6px}
+.sevbar{display:flex;gap:3px;justify-content:flex-end}
+.sevbar i{width:13px;height:8px;border-radius:2px;background:var(--line2)}
+.sevbar i.on5{background:var(--red)}.sevbar i.on4{background:var(--orange)}.sevbar i.on3{background:var(--gold)}.sevbar i.on2{background:var(--blue)}.sevbar i.on1{background:var(--gray)}
+.confv{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+@media(max-width:620px){.spof-row{grid-template-columns:36px 1fr 70px}.spof-desc{grid-column:2/4}}
+
+.vrow{display:grid;grid-template-columns:110px 1fr 52px;gap:12px;align-items:center;margin:7px 0}
+.vlabel{font-size:13px;color:var(--muted);text-transform:capitalize}
+.vtrack{height:9px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.vfill{height:100%;border-radius:4px;min-width:2px;transition:width .6s ease}
+.vpct{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+
+.doctabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.dtab{font-family:var(--mono);font-size:11.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);cursor:pointer;background:transparent}
+.dtab.on{color:#141007;background:var(--gold);border-color:var(--gold);font-weight:600}
+.docmeta{display:flex;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:12px}
+.docmeta b{color:var(--gold);font-weight:600}
+.docbody{background:#0c0e13;border:1px solid var(--line);border-radius:8px;padding:16px;max-height:340px;overflow:auto}
+.docbody pre{font-family:var(--mono);font-size:12px;line-height:1.6;white-space:pre-wrap;color:#cdd2dd}
+.cites{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.cite{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:6px;padding:4px 9px}
+.cite.stat{color:var(--gold);border-color:var(--gold-dim)}
+.audit{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:22px;word-break:break-all}
+
+.trip-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:38px;align-items:start}
+@media(max-width:940px){.trip-grid{grid-template-columns:1fr}}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.pbtn{font-size:12px;font-family:var(--mono);padding:6px 12px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);cursor:pointer;background:transparent}
+.pbtn:hover{color:var(--gold);border-color:var(--gold-dim)}
+.ev-card{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:16px}
+.ev-quiet{color:var(--muted);font-size:14px}
+.ev-type{font-family:var(--mono);font-size:15px;color:var(--gold);letter-spacing:.04em}
+.ev-rows{margin-top:10px;font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+.ev-rows b{color:var(--text);font-weight:600}
+.ev-break{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--red);border:1px solid rgba(229,72,77,.45);border-radius:999px;padding:3px 10px}
+
+.limits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:38px}
+@media(max-width:800px){.limits{grid-template-columns:1fr}}
+.limit{background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--gold-dim);border-radius:10px;padding:20px}
+.limit .lnum{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.2em}
+.limit h3{margin:8px 0 7px;font-size:15.5px}
+.limit p{font-size:13.5px;color:var(--muted)}
+
+.numbers{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:34px}
+.numbers .chip{font-size:11.5px}
+
+footer{border-top:1px solid var(--line);padding:40px 0 60px;color:var(--faint);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:center;text-align:center}
+footer .mono{font-family:var(--mono);font-size:11.5px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="brand">RAGNAR <span class="omega">Ω</span> OMNI</span>
+    <span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">connecting…</span></span>
+    <nav>
+      <a href="#pipeline">How it works</a>
+      <a href="#demo">Live demo</a>
+      <a href="#tripwires">Tripwires</a>
+      <a href="#limits">Limits</a>
+      <a href="/docs">API</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>RAGNAR <span class="omega">Ω</span> OMNI</h1>
+    <p class="sub">An asymmetric, zero-trust, game-theoretic legal-defense engine.</p>
+    <p class="desc lede">It reads a legal threat the way an attacker reads a system: for failure
+    points. It finds the single points of failure in an opponent's claim, prices every
+    proposition with honest confidence, drafts judge-adoptable defenses — then goes silent
+    and lets the statute of limitations do the work.</p>
+    <div class="chips">
+      <span class="chip"><b>11</b> SPOF weapons</span>
+      <span class="chip"><b>8</b> document builders</span>
+      <span class="chip"><b>12</b> semantic tripwires</span>
+      <span class="chip"><b>42</b>-contract self-test</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn primary" href="#demo">Run the live demo</a>
+      <a class="btn" href="#limits">Read the limits first</a>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="wrap">
+    <p class="kicker">Pipeline</p>
+    <h2>Four steps, no theater</h2>
+    <p class="lede">Every output below is produced by the deployed engine — the same one
+    behind this page. No mock data, no demo mode.</p>
+    <div class="grid4">
+      <div class="card"><span class="num">01</span><h3>Encode</h3>
+        <p>A threat becomes structured data: who claims what, on what basis, with which clock
+        running. Strict serde rejects what it does not understand.</p></div>
+      <div class="card"><span class="num">02</span><h3>Detect</h3>
+        <p>The SPOF engine fires the weapons that apply — evidentiary roots, broken
+        methodology, unlawful processing, dying clocks. Gates are honest: consumer-gated,
+        dispute-gated, probabilistic where reality is.</p></div>
+      <div class="card"><span class="num">03</span><h3>Decide</h3>
+        <p>Doctrine from a solved game, not a mood. Nash-Lagom picks the equilibrium;
+        five-state pricing makes a Pyrrhic win count as a loss; a Bayesian model tracks
+        what the opponent actually is.</p></div>
+      <div class="card"><span class="num">04</span><h3>Deploy</h3>
+        <p>Channel-separated German legal drafts: statute-first, rhetoric-free, verified law
+        only. Then the lock — and the glass phase.</p>
+        <span class="law">§ 548 BGB · § 256 ZPO · Art. 82 DSGVO</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <p class="kicker">Live demo</p>
+    <h2>Run the engine on a real threat</h2>
+    <p class="lede">Pick a profile or edit the fields, then let the pipeline run. The result
+    is a fully priced plan: the weapons that fired, the doctrine chosen, the drafted
+    documents, and what the engine thinks can happen — priced, not promised.</p>
+
+    <div class="demo-grid">
+      <div class="panel">
+        <div class="panel-title">Threat profile</div>
+        <div class="field"><label for="profile">Preset</label>
+          <select id="profile"></select></div>
+        <div class="field"><label for="opponent">Opponent</label>
+          <input type="text" id="opponent" maxlength="120"></div>
+        <div class="field"><label for="claim">Claim (EUR)</label>
+          <input type="number" id="claim" step="0.01" min="0"></div>
+        <div class="field"><label for="basis">Basis of the claim</label>
+          <input type="text" id="basis" maxlength="300"></div>
+        <div class="field"><label for="rueckgabe">Return of the vehicle (Rückgabe)</label>
+          <input type="date" id="rueckgabe"></div>
+        <div class="field"><label for="verjaehrung">Limitation expiry (Verjährung)</label>
+          <input type="date" id="verjaehrung"></div>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="isConsumer" checked> consumer (B2C)</label>
+          <label class="check"><input type="checkbox" id="hasAgb"> AGB with assignment ban</label>
+        </div>
+        <div class="field"><label for="corr">Correspondence received — one entry per line</label>
+          <textarea id="corr" rows="6"></textarea></div>
+        <button class="btn primary" id="runBtn" style="width:100%;justify-content:center;margin-top:6px">Run the pipeline</button>
+        <p class="hint">Public demo endpoint — rate-limited to 30 runs per hour per client.
+        Outputs are drafts, not legal advice.</p>
+      </div>
+
+      <div class="panel" id="resultPanel">
+        <div class="panel-title">Priced plan</div>
+        <div id="demoResult">
+          <p class="ev-quiet">No run yet. The panel fills with whatever the engine actually
+          computes — including its uncertainty.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tripwires">
+  <div class="wrap">
+    <p class="kicker">Incoming mail</p>
+    <h2>Feed the tripwire monitor</h2>
+    <p class="lede">Twelve semantic patterns watch opponent mail. Negations must not fire —
+    a bot that panics at "no SCHUFA report" would be useless. Try it.</p>
+    <div class="trip-grid">
+      <div class="panel">
+        <div class="presets">
+          <button class="pbtn" data-t="Hiermit wird Klage erhoben.">Klage announced</button>
+          <button class="pbtn" data-t="Wir bestätigen: keine SCHUFA-Meldung erfolgt.">negated SCHUFA</button>
+          <button class="pbtn" data-t="Rechnung: Selbstbeteiligung 1.000,00 EUR; Selbstbeteiligung 750,00 EUR; Selbstbeteiligung 1.000,00 EUR.">SB atomization</button>
+          <button class="pbtn" data-t="Wir unterbreiten Ihnen folgendes Vergleichsangebot.">settlement offer</button>
+          <button class="pbtn" data-t="Wir nehmen Ihr Schreiben zur Kenntnis.">neutral</button>
+        </div>
+        <div class="field"><label for="ingestText">Opponent text</label>
+          <textarea id="ingestText" rows="5" maxlength="1500"></textarea></div>
+        <button class="btn primary" id="ingestBtn" style="width:100%;justify-content:center">Check text</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Monitor response</div>
+        <div id="ingestResult"><p class="ev-quiet">Nothing checked yet.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="doctrine">
+  <div class="wrap">
+    <p class="kicker">Doctrine</p>
+    <h2>What makes it different</h2>
+    <div class="grid2">
+      <div class="card"><h3>The statute carries the weight</h3>
+        <p>Cases corroborate, never the inverse. Court documents emit CONFIRMED-tier law
+        only; quarantined citations are structurally unreachable — they cannot be emitted,
+        even by mistake.</p></div>
+      <div class="card"><h3>Every proposition ships with a price</h3>
+        <p>Confidence below 1.0 everywhere except statute-anchored logic. The auto-abo
+        application of § 548 BGB is priced at 0.75 and argued as an analogy chain — not
+        asserted as settled law.</p></div>
+      <div class="card"><h3>The engine distrusts itself</h3>
+        <p>Before every maneuver, an adjoint self-audit runs the weapon checks against its
+        own position: overreach, data hygiene, tariffed damages. A weapon you cannot
+        survive is not a weapon.</p></div>
+      <div class="card"><h3>No two deployments share a fingerprint</h3>
+        <p>Polymorphic generation permutes the surface while substance stays identical.
+        Deterrence survives template capture — the arms race is priced in, not
+        ignored.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <p class="kicker">Honesty</p>
+    <h2>What this is — and what it is not</h2>
+    <p class="lede">A defense engine that overclaims is an attack on its own user. The
+    limits are architecture, not fine print.</p>
+    <div class="limits">
+      <div class="limit"><span class="lnum">L1</span><h3>Not legal advice</h3>
+        <p>It drafts. A qualified human lawyer reviews and files. That checkpoint is
+        architectural, not a courtesy — § 138 ZPO makes truthfulness survival.</p></div>
+      <div class="limit"><span class="lnum">L2</span><h3>The § 548 gap is priced, not hidden</h3>
+        <p>Applying the six-month Mietrecht clock to auto-abo contracts is an argued analogy
+        (confidence 0.75), not settled law. Its failure degrades the plan; it does not
+        kill it.</p></div>
+      <div class="limit"><span class="lnum">L3</span><h3>Legal knowledge has a shelf life</h3>
+        <p>The citation registry is reverified on a calendar date — 2027-01-27. Until then
+        it is verified bedrock; after, it is debt. The health endpoint exposes it as
+        telemetry.</p></div>
+      <div class="limit"><span class="lnum">L4</span><h3>Market data sets priors, nothing more</h3>
+        <p>Deficit-structure evidence — subscription rates far below documented cost
+        bases — steers strategy. It is never load-bearing in court.</p></div>
+      <div class="limit"><span class="lnum">L5</span><h3>This demo is stateless</h3>
+        <p>Demo runs are per-request and nothing is stored. The full API sits behind a
+        fail-closed key gate; stateful operations live on the operator's own
+        infrastructure.</p></div>
+      <div class="limit"><span class="lnum">L6</span><h3>Rate-limited public surface</h3>
+        <p>The demo endpoints throttle per client and cap inputs. The engine behind them
+        is the production engine — no demo mode, no shortcuts.</p></div>
+    </div>
+    <div class="numbers">
+      <span class="chip"><b>11</b> SPOF weapons</span>
+      <span class="chip"><b>5</b> judge-model exploits</span>
+      <span class="chip"><b>16</b> internal patches</span>
+      <span class="chip"><b>7</b> Tardigrade phases</span>
+      <span class="chip"><b>12</b> tripwires</span>
+      <span class="chip"><b>8</b> document builders</span>
+      <span class="chip"><b>5</b>-state victory model</span>
+      <span class="chip"><b>42</b>-contract in-binary suite</span>
+      <span class="chip">hash-chained audit trail</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>RAGNAR Ω OMNI — asymmetric legal-defense engine · MIT</span>
+    <span class="mono">not legal advice — drafts only · citation reverify 2027-01-27</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+
+var AGB="Forderungen des Vertragsnehmers aus diesem Vertrag duerfen nur nach vorheriger schriftlicher Zustimmung abgetreten werden.";
+var PRESETS={
+  abo:{label:"Auto-Abo — inflated Minderwert claim",
+    opponent:"Muster-Abo GmbH",claim:3160,basis:"Minderwert laut Rueckabegutachten, berechnet als Summe fiktiver Reparaturkosten",
+    rueckgabe:"2026-06-25",verjaehrung:"2026-12-25",agb:true,
+    corr:["Mahnung vom 02.09.2026 ueber 3.160,00 EUR",
+      "Zweite Mahnung vom 16.09.2026",
+      "Dritte Mahnung: Positionsliste inkl. Umsatzsteuer 19% auf fiktive Reparaturkosten; Androhung Meldung an Auskunfteien"]},
+  schufa:{label:"Debt collector — SCHUFA escalation",
+    opponent:"Ausku Forderungsmanagement GmbH & Co. KG",claim:980.50,
+    basis:"Bestrittene Forderung, Meldung an Auskunfteien angekuendigt",
+    rueckgabe:"2026-09-01",verjaehrung:"2027-03-01",agb:false,
+    corr:["Zahlungserinnerung, Forderung bestritten",
+      "Zweite Mahnung, Forderung bestritten",
+      "Letzte Mahnung: Meldung an SCHUFA wird vorbereitet, Forderung bleibt bestritten"]},
+  sb:{label:"Fleet operator — SB atomization + tax phantom",
+    opponent:"Flotte Nord GmbH",claim:2750,
+    basis:"Schadensabrechnung mit drei getrennten Selbstbeteiligungspositionen und Umsatzsteuer auf fiktive Reparaturkosten",
+    rueckgabe:"2026-05-30",verjaehrung:"2026-11-30",agb:true,
+    corr:["Rechnung: Selbstbeteiligung 1.000,00 EUR; Selbstbeteiligung 750,00 EUR; Selbstbeteiligung 1.000,00 EUR",
+      "Nachforderung inkl. Umsatzsteuer 19% auf fiktive Reparaturkosten",
+      "Hinweis auf Rueckgabegutachten des Werkstattpartners"]}
+};
+
+var SEVNAME={5:"critical",4:"high",3:"medium",2:"low",1:"info"};
+var VCOLOR={total:"var(--green)",partial:"var(--blue)",pyrrhic:"var(--orange)",
+  stalemate:"var(--gray)",defeat:"var(--red)"};
+
+function loadPreset(key){
+  var p=PRESETS[key];
+  $("profile").value=key;
+  $("opponent").value=p.opponent;
+  $("claim").value=p.claim;
+  $("basis").value=p.basis;
+  $("rueckgabe").value=p.rueckgabe;
+  $("verjaehrung").value=p.verjaehrung;
+  $("hasAgb").checked=p.agb;
+  $("corr").value=p.corr.join("\n");
+}
+(function init(){
+  var sel=$("profile");
+  Object.keys(PRESETS).forEach(function(k){
+    var o=document.createElement("option");o.value=k;o.textContent=PRESETS[k].label;sel.appendChild(o);
+  });
+  sel.addEventListener("change",function(){loadPreset(sel.value)});
+  loadPreset("abo");
+})();
+
+function buildThreat(){
+  var t={domain:"auto_abo",opponent:$("opponent").value.trim()||"Unknown opponent",
+    claim:parseFloat($("claim").value)||0,basis:$("basis").value.trim()};
+  if($("rueckgabe").value)t.rueckgabe_date=$("rueckgabe").value;
+  if($("verjaehrung").value)t.verjaehrung_date=$("verjaehrung").value;
+  t.is_consumer=$("isConsumer").checked;
+  if($("hasAgb").checked)t.agb_excerpt=AGB;
+  var lines=$("corr").value.split("\n").map(function(s){return s.trim()}).filter(Boolean).slice(0,12);
+  if(lines.length)t.correspondence=lines;
+  return t;
+}
+
+function sevBar(sev){
+  var html="";
+  for(var i=5;i>=1;i--){
+    var on=sev>=i?" on"+Math.min(sev,5):"";
+    html+="<i class='"+on+"'></i>";
+  }
+  return html;
+}
+
+function pct(x){return (100*x).toFixed(1)+"%"}
+
+function renderPlan(p,ms){
+  var el=$("demoResult");
+  var head="<div class='result-head'><span class='mname'>"+esc(p.maneuver.name)+"</span>"
+    +"<span class='badge doctrine'>"+esc(p.doctrine)+"</span>"
+    +"<span class='badge tstate'>"+esc(p.tstate)+"</span></div>"
+    +"<p class='hint' style='margin-top:0'>maneuver basis: "+esc(p.maneuver.basis)+" · engine answered in "+ms+" ms</p>"
+    +"<div class='gauges'>"
+    +"<div class='gauge'><div class='v'>"+p.confidence.toFixed(3)+"</div><div class='k'>confidence</div></div>"
+    +"<div class='gauge'><div class='v'>"+p.dsup_score.toFixed(3)+"</div><div class='k'>defense superiority</div></div>"
+    +"<div class='gauge'><div class='v'>"+p.spofs.length+"</div><div class='k'>SPOFs fired</div></div>"
+    +"<div class='gauge'><div class='v'>"+p.documents.length+"</div><div class='k'>documents</div></div></div>";
+
+  var spofs="<p class='subhead'>SPOF constellation — firing order</p>";
+  spofs+="<div>"+p.spofs.map(function(s){
+    return "<div class='spof-row'><span class='spof-id'>"+esc(s.id)+"</span>"
+      +"<span class='spof-code'>"+esc(s.code)+"</span>"
+      +"<span class='sevbar'>"+sevBar(s.severity)+"</span>"
+      +"<span class='confv'>"+s.confidence.toFixed(2)+"</span>"
+      +"<span class='spof-desc'>"+esc(s.desc)+" <i style='color:var(--faint)'>["+SEVNAME[s.severity]+"]</i></span></div>";
+  }).join("")+"</div>";
+
+  var v=p.victory_projection;
+  var keys=["total","partial","pyrrhic","stalemate","defeat"];
+  var vict="<p class='subhead'>Victory projection — priced, not promised</p>";
+  keys.forEach(function(k){
+    if(!(k in v))return;
+    var w=Math.max(0.004,v[k]);
+    vict+="<div class='vrow'><span class='vlabel'>"+k+"</span>"
+      +"<span class='vtrack'><span class='vfill' style='width:"+pct(w)+";background:"+VCOLOR[k]+"'></span></span>"
+      +"<span class='vpct'>"+(v[k]*100).toFixed(1)+"%</span></div>";
+  });
+
+  var docs="<p class='subhead'>Drafted documents</p><div class='doctabs'>";
+  p.documents.forEach(function(d,i){
+    docs+="<button class='dtab"+(i===0?" on":"")+"' data-i='"+i+"'>"+esc(channelShort(d.channel))+"</button>";
+  });
+  docs+="</div><div id='docHolder'></div>";
+
+  var audit="<p class='audit'>audit root "+esc(p.audit_root)+"</p>";
+
+  el.innerHTML=head+spofs+vict+docs+audit;
+
+  function channelShort(c){return c==="court_facing"?"court":"letter"}
+  function renderDoc(i){
+    var d=p.documents[i];
+    var meta="<div class='docmeta'>"
+      +"<span>channel <b>"+esc(d.channel)+"</b></span>"
+      +"<span>judge-adoptability <b>"+d.judge_adoptability.toFixed(3)+"</b></span>"
+      +"<span>spof-risk <b>"+d.spof_risk.toFixed(3)+"</b></span>"
+      +"<span>confidence <b>"+d.confidence.toFixed(2)+"</b></span></div>";
+    var body="<div class='docbody'><pre>"+esc(d.body)+"</pre></div>";
+    var cites="<div class='cites'>"+d.citations.map(function(c){
+      return "<span class='cite"+(c.indexOf("§")===0||c.indexOf("Art.")===0?" stat":"")+"'>"+esc(c)+"</span>";
+    }).join("")+"</div>";
+    $("docHolder").innerHTML=meta+body+cites;
+  }
+  Array.prototype.forEach.call(el.querySelectorAll(".dtab"),function(b){
+    b.addEventListener("click",function(){
+      Array.prototype.forEach.call(el.querySelectorAll(".dtab"),function(x){x.classList.remove("on")});
+      b.classList.add("on");renderDoc(parseInt(b.getAttribute("data-i"),10));
+    });
+  });
+  renderDoc(0);
+}
+
+function setStatus(html,err){
+  var old=document.querySelector("#demoResult .status-line, #demoResult .panel-title");
+  $("demoResult").innerHTML="<p class='status-line"+(err?" err":"")+"'>"+html+"</p>";
+}
+
+$("runBtn").addEventListener("click",function(){
+  var btn=$("runBtn");btn.disabled=true;
+  $("demoResult").innerHTML="<p class='status-line'><span class='spin'></span>invoking the engine — a cold start can take a few seconds</p>";
+  var t0=performance.now();
+  fetch("/demo/decide",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(buildThreat())})
+  .then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,body:j}})})
+  .then(function(res){
+    if(!res.ok){
+      setStatus(esc(res.body.detail||("error "+res.status)),true);
+      return;
+    }
+    renderPlan(res.body,Math.round(performance.now()-t0));
+  })
+  .catch(function(){
+    setStatus("network error — the deployment may be cold; retry in a moment",true);
+  })
+  .finally(function(){btn.disabled=false});
+});
+
+function renderIngest(res){
+  var el=$("ingestResult");
+  if(!res.event){
+    el.innerHTML="<p class='ev-quiet'>No tripwire fired. Pure noise — the monitor stays in its glass phase.</p>";
+    return;
+  }
+  var ev=res.event;
+  el.innerHTML="<div class='ev-card'>"
+    +"<span class='ev-type'>"+esc(ev.type)+"</span>"
+    +"<div class='ev-rows'>"
+    +"<span>severity: <b>"+ev.severity+" ("+esc(sevName(ev.severity))+")</b></span>"
+    +"<span>response: <b>"+esc(ev.response)+"</b></span>"
+    +"<span>matched: <b>"+esc(ev.detail)+"</b></span></div>"
+    +(res.break_cryptobiosis?"<span class='ev-break'>breaks cryptobiosis — instant rehydration</span>":"")
+    +"</div>";
+}
+function sevName(s){return SEVNAME[s]||String(s)}
+
+$("ingestBtn").addEventListener("click",function(){
+  var btn=$("ingestBtn");btn.disabled=true;
+  $("ingestResult").innerHTML="<p class='status-line'><span class='spin'></span>checking…</p>";
+  fetch("/demo/ingest",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text:$("ingestText").value})})
+  .then(function(r){return r.json().then(function(j){return {ok:r.ok,body:j}})})
+  .then(function(res){
+    if(!res.ok){
+      $("ingestResult").innerHTML="<p class='status-line err'>"+esc(res.body.detail||"error")+"</p>";
+      return;
+    }
+    renderIngest(res.body);
+  })
+  .catch(function(){
+    $("ingestResult").innerHTML="<p class='status-line err'>network error — retry in a moment</p>";
+  })
+  .finally(function(){btn.disabled=false});
+});
+
+Array.prototype.forEach.call(document.querySelectorAll(".pbtn"),function(b){
+  b.addEventListener("click",function(){$("ingestText").value=b.getAttribute("data-t")});
+});
+
+fetch("/health").then(function(r){return r.json()}).then(function(h){
+  var pill=$("statusPill");pill.classList.add("live");
+  $("statusText").textContent="live · v"+h.version
+    +(h.citation_reverify_due?" · reverify due":"");
+}).catch(function(){
+  $("statusText").textContent="offline";
+});
+})();
+</script>
+</body>
+</html>

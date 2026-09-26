@@ -336,6 +336,7 @@ class Document:
     (post-sterilization invariant, asserted by the test suite for all specs)."""
 
     body: str
+    title: str = ""
     salutation: str = ""
     closing: str = ""
     citations: tuple[str, ...] = ()

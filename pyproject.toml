@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ragnar-omni"
-version = "33.0.0"
+version = "33.1.0"
 description = "RAGNAR Ω OMNI v33.0 — asymmetric, zero-trust, game-theoretic legal defense engine"
 readme = "README.md"
 license = { text = "MIT" }

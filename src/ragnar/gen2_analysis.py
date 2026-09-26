@@ -548,6 +548,7 @@ def recursive_sterilize(doc: Document, max_passes: int = 5) -> Document:
 
     return Document(
         body=assembled,
+        title=doc.title,
         salutation=doc.salutation,
         closing=doc.closing,
         citations=doc.citations,

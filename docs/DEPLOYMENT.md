@@ -145,3 +145,7 @@ Serverless contract (honest, see SPOF_ANALYSIS.md §V):
   answer in milliseconds.
 - The Omega Lock arms only with `RAGNAR_OMEGA_KEY` in the Vercel env;
   without it execution is denied and drafting continues (fail-closed).
+- The showcase page lives in `public/index.html` (CDN-served at `/`, the
+  FastAPI `/` route is the local-dev fallback). The public demo endpoints
+  (`/demo/decide`, `/demo/ingest`) are throttled (30/hour/client) and
+  input-capped — the operator API stays behind the fail-closed key gate.

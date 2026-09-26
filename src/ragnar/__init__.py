@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__version__ = "33.0.0"
+__version__ = "33.1.0"
 
 __all__ = [
     "AuditTrail",
