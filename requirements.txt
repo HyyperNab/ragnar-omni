@@ -1,0 +1,6 @@
+# Vercel installs these into the serverless function bundle at build time.
+# The engine's only heavy dependency is numpy (paid for DETERMINISM, not
+# milliseconds — see docs/ARCHITECTURE.md). uvicorn is NOT needed: the
+# Vercel Python runtime provides the server.
+fastapi>=0.111
+numpy>=1.26,<3

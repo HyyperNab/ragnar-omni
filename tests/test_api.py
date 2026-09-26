@@ -24,6 +24,15 @@ def test_health(client: TestClient) -> None:
     assert "citation_reverify_due" in body  # the shelf life is first-class
 
 
+def test_root_lighthouse(client: TestClient) -> None:
+    r = client.get("/")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["engine"] == "RAGNAR Ω OMNI"
+    assert "/health" in body["endpoints"]
+    assert body["docs"] == "/docs"  # swagger UI ships with the deployment
+
+
 def test_decide_and_get_plan(client: TestClient) -> None:
     threat = {"domain": "auto_abo", "opponent": "DFD", "claim": 2100.0, "basis": "§ 249 BGB"}
     r = client.post("/decide", json=threat)

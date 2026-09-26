@@ -1,0 +1,27 @@
+# Bundle discipline: the function gets the engine, not the workshop.
+# NOTE: patterns are gitignore-style — a bare "data" would ALSO match
+# src/ragnar/data (the packaged citation registry!). Anchor to root with /
+# or the engine loses its legal bedrock at runtime.
+.git
+.github
+/docs
+/tests
+/data
+/Dockerfile
+/docker-compose.yml
+/Makefile
+/CONTRIBUTING.md
+*.state.json
+/state
+/plans
+.env
+.env.*
+.venv
+venv
+__pycache__
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+/dist
+/build

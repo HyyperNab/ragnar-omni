@@ -46,6 +46,18 @@ def _authorize(x_api_key: str | None) -> None:
         raise HTTPException(status_code=401, detail="invalid or missing X-API-Key")
 
 
+@app.get("/")
+def root() -> dict[str, Any]:
+    """Deployment lighthouse: what this is and where the real endpoints live."""
+    return {
+        "engine": "RAGNAR Ω OMNI",
+        "version": __version__,
+        "docs": "/docs",
+        "endpoints": ["/health", "/decide", "/ingest", "/plan/{plan_id}"],
+        "auth": "set X-API-Key (required when RAGNAR_API_KEY is configured)",
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     """Liveness + the epistemic shelf-life check (reverify is a production date)."""

@@ -19,11 +19,14 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
-dependencies = ["numpy>=1.26,<3"]
+dependencies = [
+    "numpy>=1.26,<3",
+    "fastapi>=0.111",  # ragnar.api ships with the package; the server is platform-provided
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10"]
-api = ["fastapi>=0.111", "uvicorn>=0.30"]
+api = ["uvicorn>=0.30"]  # local serving only; Vercel/Docker provide the server
 
 [project.scripts]
 ragnar = "ragnar.gen5_integration:run_cli"

@@ -75,3 +75,19 @@ cover), or **PRICED** (residual risk with an honest price).
 
 FILTERED: 19 · COVERED: 7 · PRICED: 3 — and every PRICED item has a named
 owner and a named cover. That is the only honest form of "SPOF-free".
+
+## V. Serverless route (Vercel) — platform-specific entries
+
+The Vercel deployment (main.py bridge → one Fluid function) adds its own
+honest risk entries. The repo keeps BOTH routes: Docker/compose is the
+stateful reference deployment; Vercel is the zero-ops drafting surface.
+They cross-cover each other (I10 class).
+
+| ID | SPOF | Disposition | Mechanism |
+|---|---|---|---|
+| V1 | Serverless statelessness — plan store & tripwire history ephemeral | **PRICED + SHAPED** | The API creates a fresh engine per request BY DESIGN (stateless decide/ingest); `/plan/{id}` is warm-instance best-effort; stateful operations are documented as Docker-route territory. The deployment shape matches the workload — the SPOF is not hidden, it is priced. |
+| V2 | Cold start ≈ 2–4 s (numpy + FastAPI import) | **PRICED** | acceptable for a drafting API; Fluid compute amortizes it; `/health` liveness distinguishes cold vs warm. |
+| V3 | Function bundle size ceiling (numpy ≈ 100+ MB unzipped) | **COVERED** | `.vercelignore` ships engine-only bundle (no .git/tests/docs/docker); numpy pinned `>=1.26,<3`; fallback documented: pin `numpy==1.26.4` if a future runtime exceeds the 250 MB limit. |
+| V4 | Platform dependency (Vercel outage/config drift) | **COVERED** | Cross-cover with Docker/compose + bare-metal routes; the repo remains the single source of truth (`vercel deploy` builds from the same tree; no vendored copy). |
+| V5 | Public URL exposure of the drafting API | **FILTERED** | `RAGNAR_API_KEY` required via `X-API-Key` (fail-closed if set — and we set it); `/health` deliberately unauthenticated liveness only (no case data, no engine internals beyond version + reverify flag). |
+| V6 | Secrets leaking via bundle | **FILTERED** | `.vercelignore` excludes `.env*`; secrets live ONLY in Vercel env vars; `RAGNAR_OMEGA_KEY` never printed by any endpoint (health exposes presence, not value). |

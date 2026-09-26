@@ -106,3 +106,42 @@ broken, not the case.
 
 Rotation: the Omega Lock compares its armed key hash timing-safely at unlock;
 rotating the key while a lock is engaged invalidates unlocks (fail-closed).
+
+## Route 4 — Vercel (serverless full stack)
+
+The repo IS the Vercel project: `main.py` (root) exposes the FastAPI
+instance Vercel auto-detects; `requirements.txt` installs fastapi + numpy
+into the function bundle; `vercel.json` pins Python 3.12 and a 60s budget.
+
+```bash
+npm i -g vercel   # once
+vercel login
+vercel link --project ragnar-omni --yes
+
+# secrets → Vercel env (NEVER .env for serverless: it is NOT in the bundle
+# by .vercelignore — set real env vars)
+python3 -c "import secrets; print(secrets.token_hex(32))" | vercel env add RAGNAR_OMEGA_KEY production
+python3 -c "import secrets; print(secrets.token_hex(24))" | vercel env add RAGNAR_API_KEY production
+
+vercel deploy --prod --yes
+curl -s https://<project>.vercel.app/health
+```
+
+Usage (auth is required once `RAGNAR_API_KEY` is set):
+```bash
+curl -s -H "X-API-Key: $RAGNAR_API_KEY" -H "Content-Type: application/json" \
+  -d @data/examples/threat_auto_abo.json \
+  https://<project>.vercel.app/decide
+```
+
+Serverless contract (honest, see SPOF_ANALYSIS.md §V):
+
+- `POST /decide` and `POST /ingest` are stateless by design — fresh engine
+  per request. This deployment shape is correct for the drafting API.
+- `GET /plan/{id}` lives in warm-instance memory (Fluid compute keeps
+  instances warm) — best-effort, not durable. Stateful runs (tripwire
+  history across sessions, lock state) belong on the Docker route.
+- Cold start ≈ 2–4 s (numpy import); subsequent requests on a warm instance
+  answer in milliseconds.
+- The Omega Lock arms only with `RAGNAR_OMEGA_KEY` in the Vercel env;
+  without it execution is denied and drafting continues (fail-closed).
