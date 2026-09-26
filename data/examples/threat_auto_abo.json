@@ -1,0 +1,17 @@
+{
+  "domain": "auto_abo",
+  "opponent": "Muster-Abo GmbH",
+  "claim": 3160.0,
+  "basis": "Minderwert laut Rückgabegutachten, berechnet als Summe fiktiver Reparaturkosten",
+  "contract_number": "ABO-2026-0471",
+  "threat_date": "2026-09-01",
+  "rueckgabe_date": "2026-06-25",
+  "verjaehrung_date": "2026-12-25",
+  "is_consumer": true,
+  "agb_excerpt": "Forderungen des Vertragsnehmers aus diesem Vertrag dürfen nur nach vorheriger schriftlicher Zustimmung abgetreten werden.",
+  "correspondence": [
+    "Mahnung vom 02.09.2026 über 3.160,00 EUR",
+    "Zweite Mahnung vom 16.09.2026",
+    "Dritte Mahnung vom 30.09.2026: Positionsliste inkl. Umsatzsteuer 19% auf fiktive Reparaturkosten und drei Positionen Selbstbeteiligung; Androhung Weitergabe an Auskunfteien"
+  ]
+}

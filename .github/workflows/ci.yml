@@ -1,0 +1,76 @@
+# CI — the production gate, blocking on every push/PR
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pipx install ruff || pip install ruff
+      - name: ruff check
+        run: ruff check src tests
+      - name: ruff format
+        run: ruff format --check src tests
+
+  type:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install mypy numpy
+      - name: mypy (strict core, staged prose carriers)
+        run: mypy src
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev,api]"
+      - name: pytest (contract suites)
+        run: pytest -q
+      - name: in-binary suite (ships in the wheel)
+        run: ragnar --test
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: build image
+        run: docker build -t ragnar-omni:ci .
+      - name: smoke the container healthcheck contract
+        run: |
+          docker run -d --name ragnar-ci -e RAGNAR_OMEGA_KEY=ci-test-key \
+            -p 18080:8000 ragnar-omni:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:18080/health > /dev/null; then
+              echo "health OK"; docker rm -f ragnar-ci; exit 0
+            fi
+            sleep 2
+          done
+          echo "health check failed"; docker logs ragnar-ci; docker rm -f ragnar-ci; exit 1

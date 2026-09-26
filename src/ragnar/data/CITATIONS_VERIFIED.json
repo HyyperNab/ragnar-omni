@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "version": "33.0.0",
+    "frozen": "2026-09-26",
+    "reverify_after": "2027-01-27",
+    "protocol": "Epistemic Zero Trust — v32.2 Dimension 1; v33.0 internal SPOFs I1/I2",
+    "load_bearing_rule": "The STATUTE carries the weight; cases corroborate. Never invert this.",
+    "notes": [
+      "Every entry was audited against fabrication markers (wrong senate, weekend dates, hyper-specific narratives, future dates) per the v32.2 inward audit.",
+      "Citations below PROBABLE tier are quarantined and NEVER emitted by any document builder.",
+      "BGH VI ZR 375/24 (12.05.2026) is load-bearing and was ~10 weeks old at freeze: reverify on the calendar date above. That date is a production obligation, not a comment.",
+      "The auto-abo application of section 548 BGB is argued as an analogy chain (Mietvertrag qualification via the provider's own AGB), honestly priced at 0.75 — the O4 gate."
+    ]
+  },
+  "tiers": { "CONFIRMED": 4, "PROBABLE": 3, "UNVERIFIED": 2, "SUSPECT": 1, "QUARANTINED": 0 },
+  "citations": {
+    "verjaehrung_548": [
+      { "text": "§ 548 Abs. 1 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Six-month limitation for Vermieter claims from return. The clock is the weapon." },
+      { "text": "BGH, Urt. v. 08.11.2017 – VIII ZR 13/17", "tier": 4, "kind": "case", "source": "BGH; multi-source verified", "note": "AGB clauses extending the section 548 period are void (section 307 Abs. 1 BGB)." },
+      { "text": "BGH, Urt. v. 29.01.2025 – XII ZR 96/23", "tier": 4, "kind": "case", "source": "BGH; false-fabrication-flag revoked after verification (correction C12)", "note": "Rueckerhalt of the Mietsache requires a change of possession in the Vermieter's favour (section 548 Abs. 1 S. 2)." },
+      { "text": "§ 307 Abs. 1, 2 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Generalklausel: unangemessene Benachteiligung kills AGB limitation extensions." }
+    ],
+    "minderwert_methodology": [
+      { "text": "§ 249 Abs. 1 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Naturalrestitution; Bereicherungsverbot. New-for-old deduction follows from the statute itself." },
+      { "text": "§ 254 BGB", "tier": 4, "kind": "statute", "source": "Gesetzstext", "note": "Wirtschaftlichkeitsgebot for damage computation." },
+      { "text": "§ 286 ZPO", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Free assessment of evidence — a Gutachten that only sums fictive repair costs does not discharge the opponent's Darlegungslast." },
+      { "text": "§ 287 ZPO", "tier": 4, "kind": "statute", "source": "Gesetzstext", "note": "Schaetzung basis — the first coherent number anchors it (judge SPOF J2)." },
+      { "text": "OLG Stuttgart, Urt. v. 28.10.2025 – 6 U 84/24", "tier": 4, "kind": "case", "source": "Primary source verified (initially suspected fabricated by model audit; false flag revoked, correction C11)", "note": "Minderwert is regularly NOT the sum of repair costs; Abschlag per age/mileage mandatory; only damage beyond usual Gebrauchsspuren is recoverable." },
+      { "text": "§ 538 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Changes through vertragsgemaessen Gebrauch are not compensated — the monthly rate fully amortizes ordinary wear." }
+    ],
+    "umsatzsteuer": [
+      { "text": "§ 249 Abs. 2 S. 2 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "USt only included if actually incurred." },
+      { "text": "BGH, Urt. v. 18.05.2011 – VIII ZR 260/10", "tier": 4, "kind": "case", "source": "BGH", "note": "Minderwertausgleich is not a steuerbarer Umsatz — no VAT on fictive amounts." }
+    ],
+    "upe_verbringung": [
+      { "text": "BGH, Urt. v. 28.01.2025 – VI ZR 300/24", "tier": 4, "kind": "case", "source": "BGH", "note": "NARROWED (correction C8, double-edged): fictive UPE surcharges only where regionally unavoidable in a brand-bound workshop. Requires claimant-specific infrastructure evidence." },
+      { "text": "§ 242 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Treu und Glauben — no phantom logistics costs the operator never incurs." }
+    ],
+    "abtretungsverbot": [
+      { "text": "§ 308 Nr. 9 lit. a) BGB", "tier": 4, "kind": "statute", "source": "Gesetz fuer faire Verbrauchervertraege, in force 01.10.2021", "note": "AGB bans on assigning consumer money claims against the Verwender are absolutely void. Consumer-gated: collapses in B2B." },
+      { "text": "§ 307 Abs. 1 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Generalklausel anchor for pre-10/2021 contracts." },
+      { "text": "BGH, Urt. v. 27.11.2019 – VIII ZR 285/18 (Lexfox/wenigermiete.de)", "tier": 4, "kind": "case", "source": "BGH; landmark, widely reported", "note": "Legal-Tech Inkasso on Erfolgshonorar basis is a valid Rechtsdienstleistung (section 10 Abs. 1 S. 1 Nr. 1 RDG)." },
+      { "text": "LG Giessen, 1 S 148/21", "tier": 3, "kind": "case", "source": "Single-source; downgraded per correction C7 (Regelfall wirksam, B2B context)", "note": "Corroboration only; never load-bearing. Section 308 Nr. 9 carries consumers alone." }
+    ],
+    "sb_atomization": [
+      { "text": "§ 242 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Atomizing one einheitlicher Lebenssachverhalt into N independent Selbstbeteiligung positions is treuwidrig." },
+      { "text": "§ 307 Abs. 1 und 2 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "An AGB clause that functionally empties the paid-for Vollkaskoschutz is an unangemessene Benachteiligung." },
+      { "text": "§ 305c BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Restrictive surprise conditions (report-before-return hotlines) are überraschend." }
+    ],
+    "schufa": [
+      { "text": "§ 31 Abs. 2 BDSG", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "The SCHUFA defense is statute-anchored, not case-dependent: reporting a bestrittene Forderung is barred by the statute itself (v32.2 repair 1)." },
+      { "text": "Art. 18 DSGVO", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Recht auf Einschränkung der Verarbeitung." },
+      { "text": "Art. 21 DSGVO", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Widerspruch gegen Verarbeitung." },
+      { "text": "Art. 82 DSGVO", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Damages — presented as RANGE with citation support, never as arithmetic tariff (self-audit adjoint rule)." },
+      { "text": "BGH, Urt. v. 12.05.2026 – VI ZR 375/24", "tier": 4, "kind": "case", "source": "BGH; corrected citation (was miscited as 'Juli 2026', correction C5)", "note": "Bestrittene Forderungen are no belastbare Bonitätsinformation: Widerruf + Art. 82 exposure. The interlock: a claim computed the way OLG Stuttgart 6 U 84/24 forbids is nicht plausibel dargelegt — reporting it is inadmissible even before dispute." },
+      { "text": "BGH 2015 (LfDI Baden-Württemberg, dokumentiert)", "tier": 4, "kind": "case", "source": "LfDI-BW documentation", "note": "SCHUFA-Drohung with a contested claim is rechtswidrig." }
+    ],
+    "gebrauchsspuren": [
+      { "text": "§ 538 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Burden of proof: the Vermieter must prove each position is übermäßige Abnutzung, not ordinary wear." },
+      { "text": "OLG Stuttgart, Urt. v. 28.10.2025 – 6 U 84/24", "tier": 4, "kind": "case", "source": "Primary source verified", "note": "Defines Gebrauchsspuren inside the methodology holding (correction C10: individual older AG/LG cites dropped as unnecessary)." }
+    ],
+    "market_evidence": [
+      { "text": "Faaren Group Auto-Abo Report 2024/2025", "tier": 4, "kind": "market", "source": "faaren-group.de / autoflotte.de / ecomento.de", "note": "Average monthly rate €563 (2024, down from €634); Abo-Faktor 1.07% (2025). HEURISTIC TIER: sets opponent priors, never load-bearing in court." },
+      { "text": "ADAC Autokostendatenbank 2024", "tier": 4, "kind": "market", "source": "ADAC", "note": "Cost floor for Kompakt/SUV fleet operation: ≈ €1,563–€2,163/month. HEURISTIC TIER." },
+      { "text": "DAT-Report 2024", "tier": 4, "kind": "market", "source": "DAT", "note": "Value depreciation 28–35% in year one. HEURISTIC TIER." }
+    ],
+    "systemic": [
+      { "text": "§§ 1, 2 UKlaG", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Verbandsklage route for invalid AGB — the hub-attack channel (O8, probabilistic p≈0.3)." },
+      { "text": "§ 840 BGB", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Gesamtschuld — the principal/agent edge-friction anchor (O10)." },
+      { "text": "§ 256 ZPO", "tier": 4, "kind": "statute", "source": "Gesetzestext", "note": "Negative Feststellungsklage — pre-emption to seize tempo and set the anchor (O11/J2)." }
+    ]
+  },
+  "quarantine": [
+    { "text": "BGH, NJW 2007, 2106", "reason": "Unverifiable (correction C4): doctrine survives via § 31 Abs. 2 BDSG + BGH VI ZR 375/24. NEVER EMITTED." },
+    { "text": "BGH VIII ZR 178/85", "reason": "Unverified (correction C6): deleted from citations; § 548-analog argued as analogy chain instead. NEVER EMITTED." },
+    { "text": "BGH VIII ZR 168/24 (23.11.2024)", "reason": "CONFIRMED HALLUCINATION (correction C1): amalgam, Saturday date. Model-error entry kept as audit evidence. NEVER EMITTED." },
+    { "text": "Kindersitzverformung detail of OLG Stuttgart 6 U 84/24", "reason": "Unverified narrative detail (correction C9): the verified core holdings carry. NEVER EMITTED." },
+    { "text": "LG München I 15 S 9301/96; OLG Düsseldorf 1 U 30/09; AG Osnabrück 44 C 513/98", "reason": "Dropped as unnecessary (correction C10): 6 U 84/24 defines Gebrauchsspuren internally. NEVER EMITTED." },
+    { "text": "BGH, Juli 2026 (unbestrittene Forderung)", "reason": "Corrected (C5) to BGH VI ZR 375/24, 12.05.2026. The future-dated form is never emitted." }
+  ]
+}

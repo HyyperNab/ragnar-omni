@@ -1,0 +1,33 @@
+# Bytecode / venvs
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Tooling caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets — NEVER commit (the lock is fail-closed for a reason)
+.env
+*.key
+
+# State / plans — operator data stays local
+state/
+plans/
+*.state.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
